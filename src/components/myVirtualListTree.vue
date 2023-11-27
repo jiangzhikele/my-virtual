@@ -1,688 +1,552 @@
 <template>
-  <div>
-    <vxe-list height="400" class="my-tree" :loading="loading" :data="list">
-      <template v-slot="{ items }">
-        <div
-            class="my-tree-item"
-            v-for="item in items"
-            :key="item.id"
-            :class="[`level-${item._LEVEL}`, {'has-child': item._HAS_CHILDREN, 'is-expand': item._EXPAND}]"
-            :style="{paddingLeft: `${item._LEVEL * 20}px`}">
-          <i class="tree-icon fa fa-chevron-right" @click="toggleTreeNode(item)"></i>
-          <span class="tree-label">{{ item.label }}</span>
-        </div>
-      </template>
-    </vxe-list>
+  <div class="wrap" ref="wrap" @scroll="handleScroll" :style="{ height: screenHeight + 'px' }">
+    <div class="invent-space" :style="{ height: contentHeight + 'px' }"></div>
+    <div class="container" :style="{ transform: getTransform }">
+      <div
+          class="tree-item"
+          v-for="(item, i) in visibleData"
+          :key="i"
+          v-show="item.visible"
+          @click="handleExpand(item)"
+          :style="`padding-left:${item.level * 20}px`"
+      >
+        <span>
+          <span>
+            <a-icon v-show="item.children.length" :type="item.expand ? 'caret-down' : 'caret-right'"  />
+            <i :style="`margin-left:${item.children.length ? 0 : 16}px`"/>
+          </span>
+          {{item.address}}
+        </span>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import XEUtils from 'xe-utils'
-import 'vxe-table/lib/index.css'
 export default {
-  name: 'MyVirtualTableExtend',
-  components: {
-  },
   props: {
+    screenHeight: {
+      type: Number,
+      default: 350
+    }
   },
   data () {
     return {
-      loading: false,
-      list: []
+      data: [
+        {
+          key: 1,
+          name: 'John Brown sr.',
+          age: 60,
+          address: 'New York No. 1 Lake Park',
+          children: [
+            {
+              key: 11,
+              name: 'John Brown',
+              age: 42,
+              address: 'New York No. 11 Lake Park',
+            },
+            {
+              key: 12,
+              name: 'John Brown jr.',
+              age: 30,
+              address: 'New York No. 12 Lake Park',
+              children: [
+                {
+                  key: 121,
+                  name: 'Jimmy Brown',
+                  age: 16,
+                  address: 'New York No. 121 Lake Park',
+                },
+              ],
+            },
+            {
+              key: 13,
+              name: 'Jim Green sr.',
+              age: 72,
+              address: 'London No. 13 Lake Park',
+              children: [
+                {
+                  key: 131,
+                  name: 'Jim Green',
+                  age: 42,
+                  address: 'London No. 131 Lake Park',
+                  children: [
+                    {
+                      key: 1311,
+                      name: 'Jim Green jr.',
+                      age: 25,
+                      address: 'London No. 1311 Lake Park',
+                    },
+                    {
+                      key: 1312,
+                      name: 'Jimmy Green sr.',
+                      age: 18,
+                      address: 'London No. 1312 Lake Park',
+                      children: [
+                        {
+                          key: 13121,
+                          name: 'Jim Green jr.',
+                          age: 25,
+                          address: 'London No. 13121 Lake Park',
+                        },
+                        {
+                          key: 13122,
+                          name: 'Jimmy Green sr.',
+                          age: 18,
+                          address: 'London No. 13122 Lake Park',
+                          children: [
+                            {
+                              key: 131221,
+                              name: 'Jim Green jr.',
+                              age: 25,
+                              address: 'London No. 131221 Lake Park',
+                            },
+                            {
+                              key: 131222,
+                              name: 'Jimmy Green sr.',
+                              age: 18,
+                              address: 'London No. 131222 Lake Park',
+                              children: [
+                                {
+                                  key: 1312221,
+                                  name: 'Jim Green jr.',
+                                  age: 25,
+                                  address: 'London No. 1312221 Lake Park',
+                                },
+                                {
+                                  key: 1312222,
+                                  name: 'Jimmy Green sr.',
+                                  age: 18,
+                                  address: 'London No. 1312222 Lake Park',
+                                  children: [
+                                    {
+                                      key: 13122221,
+                                      name: 'Jim Green jr.',
+                                      age: 25,
+                                      address: 'London No. 13122221 Lake Park',
+                                    },
+                                    {
+                                      key: 13122222,
+                                      name: 'Jimmy Green sr.',
+                                      age: 18,
+                                      address: 'London No. 13122222 Lake Park',
+                                      children: [
+                                        {
+                                          key: 131222221,
+                                          name: 'Jim Green jr.',
+                                          age: 25,
+                                          address: 'London No. 131222221 Lake Park',
+                                        },
+                                        {
+                                          key: 131222222,
+                                          name: 'Jimmy Green sr.',
+                                          age: 18,
+                                          address: 'London No. 131222222 Lake Park',
+                                          children: [
+                                            {
+                                              key: 1312222221,
+                                              name: 'Jim Green jr.',
+                                              age: 25,
+                                              address: 'London No. 1312222221 Lake Park',
+                                            },
+                                            {
+                                              key: 1312222222,
+                                              name: 'Jimmy Green sr.',
+                                              age: 18,
+                                              address: 'London No. 1312222222 Lake Park',
+                                            },
+                                          ],
+                                        },
+                                      ],
+                                    },
+                                  ],
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          key: 2,
+          name: 'John Brown sr.',
+          age: 60,
+          address: 'New York No. 2 Lake Park',
+          children: [
+            {
+              key: 21,
+              name: 'John Brown',
+              age: 42,
+              address: 'New York No. 21 Lake Park',
+            },
+            {
+              key: 22,
+              name: 'John Brown jr.',
+              age: 30,
+              address: 'New York No. 22 Lake Park',
+              children: [
+                {
+                  key: 221,
+                  name: 'Jimmy Brown',
+                  age: 16,
+                  address: 'New York No. 221 Lake Park',
+                },
+              ],
+            },
+            {
+              key: 23,
+              name: 'Jim Green sr.',
+              age: 72,
+              address: 'London No. 23 Lake Park',
+              children: [
+                {
+                  key: 231,
+                  name: 'Jim Green',
+                  age: 42,
+                  address: 'London No. 231 Lake Park',
+                  children: [
+                    {
+                      key: 2311,
+                      name: 'Jim Green jr.',
+                      age: 25,
+                      address: 'London No. 2311 Lake Park',
+                    },
+                    {
+                      key: 2312,
+                      name: 'Jimmy Green sr.',
+                      age: 18,
+                      address: 'London No. 2312 Lake Park',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          key: 3,
+          name: 'John Brown sr.',
+          age: 60,
+          address: 'New York No. 3 Lake Park',
+          children: [
+            {
+              key: 31,
+              name: 'John Brown',
+              age: 42,
+              address: 'New York No. 31 Lake Park',
+            },
+            {
+              key: 32,
+              name: 'John Brown jr.',
+              age: 30,
+              address: 'New York No. 32 Lake Park',
+              children: [
+                {
+                  key: 321,
+                  name: 'Jimmy Brown',
+                  age: 16,
+                  address: 'New York No. 321 Lake Park',
+                },
+              ],
+            },
+            {
+              key: 33,
+              name: 'Jim Green sr.',
+              age: 72,
+              address: 'London No. 33 Lake Park',
+              children: [
+                {
+                  key: 331,
+                  name: 'Jim Green',
+                  age: 42,
+                  address: 'London No. 331 Lake Park',
+                  children: [
+                    {
+                      key: 3311,
+                      name: 'Jim Green jr.',
+                      age: 25,
+                      address: 'London No. 3311 Lake Park',
+                    },
+                    {
+                      key: 3312,
+                      name: 'Jimmy Green sr.',
+                      age: 18,
+                      address: 'London No. 3312 Lake Park',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          key: 4,
+          name: 'John Brown sr.',
+          age: 60,
+          address: 'New York No. 4 Lake Park',
+          children: [
+            {
+              key: 41,
+              name: 'John Brown',
+              age: 42,
+              address: 'New York No. 41 Lake Park',
+            },
+            {
+              key: 42,
+              name: 'John Brown jr.',
+              age: 30,
+              address: 'New York No. 42 Lake Park',
+              children: [
+                {
+                  key: 421,
+                  name: 'Jimmy Brown',
+                  age: 16,
+                  address: 'New York No. 421 Lake Park',
+                },
+              ],
+            },
+            {
+              key: 43,
+              name: 'Jim Green sr.',
+              age: 72,
+              address: 'London No. 43 Lake Park',
+              children: [
+                {
+                  key: 431,
+                  name: 'Jim Green',
+                  age: 42,
+                  address: 'London No. 431 Lake Park',
+                  children: [
+                    {
+                      key: 4311,
+                      name: 'Jim Green jr.',
+                      age: 25,
+                      address: 'London No. 4311 Lake Park',
+                    },
+                    {
+                      key: 4312,
+                      name: 'Jimmy Green sr.',
+                      age: 18,
+                      address: 'London No. 4312 Lake Park',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          key: 5,
+          name: 'John Brown sr.',
+          age: 60,
+          address: 'New York No. 5 Lake Park',
+          children: [
+            {
+              key: 51,
+              name: 'John Brown',
+              age: 52,
+              address: 'New York No. 51 Lake Park',
+            },
+            {
+              key: 52,
+              name: 'John Brown jr.',
+              age: 30,
+              address: 'New York No. 52 Lake Park',
+              children: [
+                {
+                  key: 521,
+                  name: 'Jimmy Brown',
+                  age: 16,
+                  address: 'New York No. 521 Lake Park',
+                },
+              ],
+            },
+            {
+              key: 53,
+              name: 'Jim Green sr.',
+              age: 72,
+              address: 'London No. 53 Lake Park',
+              children: [
+                {
+                  key: 531,
+                  name: 'Jim Green',
+                  age: 42,
+                  address: 'London No. 531 Lake Park',
+                  children: [
+                    {
+                      key: 5311,
+                      name: 'Jim Green jr.',
+                      age: 25,
+                      address: 'London No. 5311 Lake Park',
+                    },
+                    {
+                      key: 5312,
+                      name: 'Jimmy Green sr.',
+                      age: 18,
+                      address: 'London No. 5312 Lake Park',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        }
+      ],
+      treeData: [],
+      start: 0,
+      startOffset: 0,
+      itemSize: 25 // 节点的高度
     }
   },
   computed: {
+    contentHeight () { // 已展示的树节点高度，过滤掉未展开显示的
+      return (
+          (this.treeData || []).filter(item => item.visible).length *
+          this.itemSize
+      )
+    },
+    getTransform () {
+      // return `translate3d(0,${this.startOffset}px,0)`
+      return `translateY(${this.startOffset}px)`
+    },
+    unHiddenList () { // 已展开未隐藏的树节点
+      return (this.treeData || []).filter(item => item.visible)
+    },
+    visibleData () { // 渲染的树形节点数据
+      return this.unHiddenList.slice(this.start, this.end)
+    },
+    visibleCount () {
+      // 向上取整，再增加缓冲区,多加一屏
+      return Math.ceil(this.screenHeight / this.itemSize) * 2
+    },
+    end () {
+      // 此时的结束索引
+      let end = this.start + this.visibleCount
+      if (!this.unHiddenList[end]) {
+        end = this.unHiddenList.length
+      }
+      return end
+    },
   },
   methods: {
-    loadTree () {
-      const data = [
-        {
-          "spanId": "3013630021baadd1",
-          "parentSpanId": "50e6e56727850841",
-          "traceId": "76e90dad92baf5cdb1637066cf6854a4",
-          "startTime": 1700533881850000,
-          "endTime": 1700533881856000,
-          "serviceName": "user-center",
-          "spanNameAnnotation": "",
-          "spanName": "org.apache.dubbo.rpc.proxy.AbstractProxyInvoker.invoke(org.apache.dubbo.rpc.Invocation invocation)",
-          "duration": 6000,
-          "kind": 1,
-          "type": "http",
-          "value": "",
-          "error": false,
-          "sequence": 0,
-          "children": [
-            {
-              "spanId": "22adac378120182f",
-              "parentSpanId": "3013630021baadd1",
-              "traceId": "76e90dad92baf5cdb1637066cf6854a4",
-              "startTime": 1700533881850000,
-              "endTime": 1700533881850000,
-              "serviceName": "user-center",
-              "spanNameAnnotation": "",
-              "spanName": "redis.clients.jedis.BinaryJedis.isConnected()",
-              "duration": 0,
-              "kind": 3,
-              "type": "db",
-              "value": "redis",
-              "error": false,
-              "sequence": 1,
-              "children": null
-            },
-            {
-              "spanId": "fdfdfabf518afaa2",
-              "parentSpanId": "3013630021baadd1",
-              "traceId": "76e90dad92baf5cdb1637066cf6854a4",
-              "startTime": 1700533881850000,
-              "endTime": 1700533881850000,
-              "serviceName": "user-center",
-              "spanNameAnnotation": "",
-              "spanName": "redis.clients.jedis.BinaryJedis.get(byte[] key)",
-              "duration": 0,
-              "kind": 3,
-              "type": "db",
-              "value": "redis",
-              "error": false,
-              "sequence": 2,
-              "children": null
-            },
-            {
-              "spanId": "f0a439507dedbf8f",
-              "parentSpanId": "3013630021baadd1",
-              "traceId": "76e90dad92baf5cdb1637066cf6854a4",
-              "startTime": 1700533881850000,
-              "endTime": 1700533881850000,
-              "serviceName": "user-center",
-              "spanNameAnnotation": "",
-              "spanName": "redis.clients.jedis.BinaryJedis.isConnected()",
-              "duration": 0,
-              "kind": 3,
-              "type": "db",
-              "value": "redis",
-              "error": false,
-              "sequence": 3,
-              "children": null
-            },
-            {
-              "spanId": "26acbcf3922477f8",
-              "parentSpanId": "3013630021baadd1",
-              "traceId": "76e90dad92baf5cdb1637066cf6854a4",
-              "startTime": 1700533881852000,
-              "endTime": 1700533881855000,
-              "serviceName": "user-center",
-              "spanNameAnnotation": "",
-              "spanName": "redis.clients.jedis.BinaryJedis.get(byte[] key)",
-              "duration": 3000,
-              "kind": 3,
-              "type": "db",
-              "value": "redis",
-              "error": false,
-              "sequence": 4,
-              "children": null
-            },
-            {
-              "spanId": "2b592b73fae017ce",
-              "parentSpanId": "3013630021baadd1",
-              "traceId": "76e90dad92baf5cdb1637066cf6854a4",
-              "startTime": 1700533881855000,
-              "endTime": 1700533881856000,
-              "serviceName": "user-center",
-              "spanNameAnnotation": "",
-              "spanName": "cn.gov.zcy.paas.privilege.runtime.PrivilegeRuntimeServiceImpl.isResourcePermit(cn.gov.zcy.paas.user.dto.Operator operator, java.lang.String libraryCode, java.lang.String path, java.lang.String method)",
-              "duration": 1000,
-              "kind": 1,
-              "type": "http",
-              "value": "",
-              "error": false,
-              "sequence": 5,
-              "children": [
-                {
-                  "spanId": "b081646445e24124",
-                  "parentSpanId": "2b592b73fae017ce",
-                  "traceId": "76e90dad92baf5cdb1637066cf6854a4",
-                  "startTime": 1700533881855000,
-                  "endTime": 1700533881856000,
-                  "serviceName": "user-center",
-                  "spanNameAnnotation": "",
-                  "spanName": "cn.gov.zcy.paas.privilege.runtime.ApiRuntimeServiceHelper.isResourcePermit(cn.gov.zcy.paas.user.dto.Operator operator, java.lang.String libraryCode, java.lang.String path, java.lang.String method)",
-                  "duration": 1000,
-                  "kind": 1,
-                  "type": "http",
-                  "value": "",
-                  "error": false,
-                  "sequence": 6,
-                  "children": [
-                    {
-                      "spanId": "6b8bcf62f71b7e3c",
-                      "parentSpanId": "b081646445e24124",
-                      "traceId": "76e90dad92baf5cdb1637066cf6854a4",
-                      "startTime": 1700533881855000,
-                      "endTime": 1700533881855000,
-                      "serviceName": "user-center",
-                      "spanNameAnnotation": "",
-                      "spanName": "cn.gov.zcy.paas.privilege.runtime.cache.ResourceMetaRuntimeService.getZcyUrlMatcher(cn.zcygov.paas.privilege.enums.ResourceTypeEnum type)",
-                      "duration": 0,
-                      "kind": 1,
-                      "type": "http",
-                      "value": "",
-                      "error": false,
-                      "sequence": 7,
-                      "children": null
-                    },
-                    {
-                      "spanId": "da8ff76690477625",
-                      "parentSpanId": "b081646445e24124",
-                      "traceId": "76e90dad92baf5cdb1637066cf6854a4",
-                      "startTime": 1700533881856000,
-                      "endTime": 1700533881856000,
-                      "serviceName": "user-center",
-                      "spanNameAnnotation": "",
-                      "spanName": "cn.gov.zcy.paas.privilege.runtime.cache.ResourceMetaRuntimeService.getZcyUrlMatcher(cn.zcygov.paas.privilege.enums.ResourceTypeEnum type)",
-                      "duration": 0,
-                      "kind": 1,
-                      "type": "http",
-                      "value": "",
-                      "error": false,
-                      "sequence": 8,
-                      "children": null
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "spanId": "22adac378120182f",
-          "parentSpanId": "3013630021baadd1",
-          "traceId": "76e90dad92baf5cdb1637066cf6854a4",
-          "startTime": 1700533881850000,
-          "endTime": 1700533881850000,
-          "serviceName": "user-center",
-          "spanNameAnnotation": "",
-          "spanName": "redis.clients.jedis.BinaryJedis.isConnected()",
-          "duration": 0,
-          "kind": 3,
-          "type": "db",
-          "value": "redis",
-          "error": false,
-          "sequence": 1,
-          "children": null
-        },
-        {
-          "spanId": "fdfdfabf518afaa2",
-          "parentSpanId": "3013630021baadd1",
-          "traceId": "76e90dad92baf5cdb1637066cf6854a4",
-          "startTime": 1700533881850000,
-          "endTime": 1700533881850000,
-          "serviceName": "user-center",
-          "spanNameAnnotation": "",
-          "spanName": "redis.clients.jedis.BinaryJedis.get(byte[] key)",
-          "duration": 0,
-          "kind": 3,
-          "type": "db",
-          "value": "redis",
-          "error": false,
-          "sequence": 2,
-          "children": null
-        },
-        {
-          "spanId": "f0a439507dedbf8f",
-          "parentSpanId": "3013630021baadd1",
-          "traceId": "76e90dad92baf5cdb1637066cf6854a4",
-          "startTime": 1700533881850000,
-          "endTime": 1700533881850000,
-          "serviceName": "user-center",
-          "spanNameAnnotation": "",
-          "spanName": "redis.clients.jedis.BinaryJedis.isConnected()",
-          "duration": 0,
-          "kind": 3,
-          "type": "db",
-          "value": "redis",
-          "error": false,
-          "sequence": 3,
-          "children": null
-        },
-        {
-          "spanId": "50e6e56727850841",
-          "parentSpanId": "0000000000000000",
-          "traceId": "76e90dad92baf5cdb1637066cf6854a4",
-          "startTime": 1700533881850000,
-          "endTime": 1700533881856000,
-          "serviceName": "user-center",
-          "spanNameAnnotation": "",
-          "spanName": "cn.gov.zcy.paas.auth.service.AccessContextService:resolveUseHash(java.lang.String,java.lang.String,java.lang.String,cn.gov.zcy.paas.auth.dto.AccessEnvInfo)",
-          "duration": 6000,
-          "kind": 2,
-          "type": "rpc",
-          "value": "dubbo",
-          "error": false,
-          "sequence": 0,
-          "children": [
-            {
-              "spanId": "3013630021baadd1",
-              "parentSpanId": "50e6e56727850841",
-              "traceId": "76e90dad92baf5cdb1637066cf6854a4",
-              "startTime": 1700533881850000,
-              "endTime": 1700533881856000,
-              "serviceName": "user-center",
-              "spanNameAnnotation": "",
-              "spanName": "org.apache.dubbo.rpc.proxy.AbstractProxyInvoker.invoke(org.apache.dubbo.rpc.Invocation invocation)",
-              "duration": 6000,
-              "kind": 1,
-              "type": "http",
-              "value": "",
-              "error": false,
-              "sequence": 0,
-              "children": [
-                {
-                  "spanId": "22adac378120182f",
-                  "parentSpanId": "3013630021baadd1",
-                  "traceId": "76e90dad92baf5cdb1637066cf6854a4",
-                  "startTime": 1700533881850000,
-                  "endTime": 1700533881850000,
-                  "serviceName": "user-center",
-                  "spanNameAnnotation": "",
-                  "spanName": "redis.clients.jedis.BinaryJedis.isConnected()",
-                  "duration": 0,
-                  "kind": 3,
-                  "type": "db",
-                  "value": "redis",
-                  "error": false,
-                  "sequence": 1,
-                  "children": null
-                },
-                {
-                  "spanId": "fdfdfabf518afaa2",
-                  "parentSpanId": "3013630021baadd1",
-                  "traceId": "76e90dad92baf5cdb1637066cf6854a4",
-                  "startTime": 1700533881850000,
-                  "endTime": 1700533881850000,
-                  "serviceName": "user-center",
-                  "spanNameAnnotation": "",
-                  "spanName": "redis.clients.jedis.BinaryJedis.get(byte[] key)",
-                  "duration": 0,
-                  "kind": 3,
-                  "type": "db",
-                  "value": "redis",
-                  "error": false,
-                  "sequence": 2,
-                  "children": null
-                },
-                {
-                  "spanId": "f0a439507dedbf8f",
-                  "parentSpanId": "3013630021baadd1",
-                  "traceId": "76e90dad92baf5cdb1637066cf6854a4",
-                  "startTime": 1700533881850000,
-                  "endTime": 1700533881850000,
-                  "serviceName": "user-center",
-                  "spanNameAnnotation": "",
-                  "spanName": "redis.clients.jedis.BinaryJedis.isConnected()",
-                  "duration": 0,
-                  "kind": 3,
-                  "type": "db",
-                  "value": "redis",
-                  "error": false,
-                  "sequence": 3,
-                  "children": null
-                },
-                {
-                  "spanId": "26acbcf3922477f8",
-                  "parentSpanId": "3013630021baadd1",
-                  "traceId": "76e90dad92baf5cdb1637066cf6854a4",
-                  "startTime": 1700533881852000,
-                  "endTime": 1700533881855000,
-                  "serviceName": "user-center",
-                  "spanNameAnnotation": "",
-                  "spanName": "redis.clients.jedis.BinaryJedis.get(byte[] key)",
-                  "duration": 3000,
-                  "kind": 3,
-                  "type": "db",
-                  "value": "redis",
-                  "error": false,
-                  "sequence": 4,
-                  "children": null
-                },
-                {
-                  "spanId": "2b592b73fae017ce",
-                  "parentSpanId": "3013630021baadd1",
-                  "traceId": "76e90dad92baf5cdb1637066cf6854a4",
-                  "startTime": 1700533881855000,
-                  "endTime": 1700533881856000,
-                  "serviceName": "user-center",
-                  "spanNameAnnotation": "",
-                  "spanName": "cn.gov.zcy.paas.privilege.runtime.PrivilegeRuntimeServiceImpl.isResourcePermit(cn.gov.zcy.paas.user.dto.Operator operator, java.lang.String libraryCode, java.lang.String path, java.lang.String method)",
-                  "duration": 1000,
-                  "kind": 1,
-                  "type": "http",
-                  "value": "",
-                  "error": false,
-                  "sequence": 5,
-                  "children": [
-                    {
-                      "spanId": "b081646445e24124",
-                      "parentSpanId": "2b592b73fae017ce",
-                      "traceId": "76e90dad92baf5cdb1637066cf6854a4",
-                      "startTime": 1700533881855000,
-                      "endTime": 1700533881856000,
-                      "serviceName": "user-center",
-                      "spanNameAnnotation": "",
-                      "spanName": "cn.gov.zcy.paas.privilege.runtime.ApiRuntimeServiceHelper.isResourcePermit(cn.gov.zcy.paas.user.dto.Operator operator, java.lang.String libraryCode, java.lang.String path, java.lang.String method)",
-                      "duration": 1000,
-                      "kind": 1,
-                      "type": "http",
-                      "value": "",
-                      "error": false,
-                      "sequence": 6,
-                      "children": [
-                        {
-                          "spanId": "6b8bcf62f71b7e3c",
-                          "parentSpanId": "b081646445e24124",
-                          "traceId": "76e90dad92baf5cdb1637066cf6854a4",
-                          "startTime": 1700533881855000,
-                          "endTime": 1700533881855000,
-                          "serviceName": "user-center",
-                          "spanNameAnnotation": "",
-                          "spanName": "cn.gov.zcy.paas.privilege.runtime.cache.ResourceMetaRuntimeService.getZcyUrlMatcher(cn.zcygov.paas.privilege.enums.ResourceTypeEnum type)",
-                          "duration": 0,
-                          "kind": 1,
-                          "type": "http",
-                          "value": "",
-                          "error": false,
-                          "sequence": 7,
-                          "children": null
-                        },
-                        {
-                          "spanId": "da8ff76690477625",
-                          "parentSpanId": "b081646445e24124",
-                          "traceId": "76e90dad92baf5cdb1637066cf6854a4",
-                          "startTime": 1700533881856000,
-                          "endTime": 1700533881856000,
-                          "serviceName": "user-center",
-                          "spanNameAnnotation": "",
-                          "spanName": "cn.gov.zcy.paas.privilege.runtime.cache.ResourceMetaRuntimeService.getZcyUrlMatcher(cn.zcygov.paas.privilege.enums.ResourceTypeEnum type)",
-                          "duration": 0,
-                          "kind": 1,
-                          "type": "http",
-                          "value": "",
-                          "error": false,
-                          "sequence": 8,
-                          "children": null
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "spanId": "26acbcf3922477f8",
-          "parentSpanId": "3013630021baadd1",
-          "traceId": "76e90dad92baf5cdb1637066cf6854a4",
-          "startTime": 1700533881852000,
-          "endTime": 1700533881855000,
-          "serviceName": "user-center",
-          "spanNameAnnotation": "",
-          "spanName": "redis.clients.jedis.BinaryJedis.get(byte[] key)",
-          "duration": 3000,
-          "kind": 3,
-          "type": "db",
-          "value": "redis",
-          "error": false,
-          "sequence": 4,
-          "children": null
-        },
-        {
-          "spanId": "2b592b73fae017ce",
-          "parentSpanId": "3013630021baadd1",
-          "traceId": "76e90dad92baf5cdb1637066cf6854a4",
-          "startTime": 1700533881855000,
-          "endTime": 1700533881856000,
-          "serviceName": "user-center",
-          "spanNameAnnotation": "",
-          "spanName": "cn.gov.zcy.paas.privilege.runtime.PrivilegeRuntimeServiceImpl.isResourcePermit(cn.gov.zcy.paas.user.dto.Operator operator, java.lang.String libraryCode, java.lang.String path, java.lang.String method)",
-          "duration": 1000,
-          "kind": 1,
-          "type": "http",
-          "value": "",
-          "error": false,
-          "sequence": 5,
-          "children": [
-            {
-              "spanId": "b081646445e24124",
-              "parentSpanId": "2b592b73fae017ce",
-              "traceId": "76e90dad92baf5cdb1637066cf6854a4",
-              "startTime": 1700533881855000,
-              "endTime": 1700533881856000,
-              "serviceName": "user-center",
-              "spanNameAnnotation": "",
-              "spanName": "cn.gov.zcy.paas.privilege.runtime.ApiRuntimeServiceHelper.isResourcePermit(cn.gov.zcy.paas.user.dto.Operator operator, java.lang.String libraryCode, java.lang.String path, java.lang.String method)",
-              "duration": 1000,
-              "kind": 1,
-              "type": "http",
-              "value": "",
-              "error": false,
-              "sequence": 6,
-              "children": [
-                {
-                  "spanId": "6b8bcf62f71b7e3c",
-                  "parentSpanId": "b081646445e24124",
-                  "traceId": "76e90dad92baf5cdb1637066cf6854a4",
-                  "startTime": 1700533881855000,
-                  "endTime": 1700533881855000,
-                  "serviceName": "user-center",
-                  "spanNameAnnotation": "",
-                  "spanName": "cn.gov.zcy.paas.privilege.runtime.cache.ResourceMetaRuntimeService.getZcyUrlMatcher(cn.zcygov.paas.privilege.enums.ResourceTypeEnum type)",
-                  "duration": 0,
-                  "kind": 1,
-                  "type": "http",
-                  "value": "",
-                  "error": false,
-                  "sequence": 7,
-                  "children": null
-                },
-                {
-                  "spanId": "da8ff76690477625",
-                  "parentSpanId": "b081646445e24124",
-                  "traceId": "76e90dad92baf5cdb1637066cf6854a4",
-                  "startTime": 1700533881856000,
-                  "endTime": 1700533881856000,
-                  "serviceName": "user-center",
-                  "spanNameAnnotation": "",
-                  "spanName": "cn.gov.zcy.paas.privilege.runtime.cache.ResourceMetaRuntimeService.getZcyUrlMatcher(cn.zcygov.paas.privilege.enums.ResourceTypeEnum type)",
-                  "duration": 0,
-                  "kind": 1,
-                  "type": "http",
-                  "value": "",
-                  "error": false,
-                  "sequence": 8,
-                  "children": null
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "spanId": "b081646445e24124",
-          "parentSpanId": "2b592b73fae017ce",
-          "traceId": "76e90dad92baf5cdb1637066cf6854a4",
-          "startTime": 1700533881855000,
-          "endTime": 1700533881856000,
-          "serviceName": "user-center",
-          "spanNameAnnotation": "",
-          "spanName": "cn.gov.zcy.paas.privilege.runtime.ApiRuntimeServiceHelper.isResourcePermit(cn.gov.zcy.paas.user.dto.Operator operator, java.lang.String libraryCode, java.lang.String path, java.lang.String method)",
-          "duration": 1000,
-          "kind": 1,
-          "type": "http",
-          "value": "",
-          "error": false,
-          "sequence": 6,
-          "children": [
-            {
-              "spanId": "6b8bcf62f71b7e3c",
-              "parentSpanId": "b081646445e24124",
-              "traceId": "76e90dad92baf5cdb1637066cf6854a4",
-              "startTime": 1700533881855000,
-              "endTime": 1700533881855000,
-              "serviceName": "user-center",
-              "spanNameAnnotation": "",
-              "spanName": "cn.gov.zcy.paas.privilege.runtime.cache.ResourceMetaRuntimeService.getZcyUrlMatcher(cn.zcygov.paas.privilege.enums.ResourceTypeEnum type)",
-              "duration": 0,
-              "kind": 1,
-              "type": "http",
-              "value": "",
-              "error": false,
-              "sequence": 7,
-              "children": null
-            },
-            {
-              "spanId": "da8ff76690477625",
-              "parentSpanId": "b081646445e24124",
-              "traceId": "76e90dad92baf5cdb1637066cf6854a4",
-              "startTime": 1700533881856000,
-              "endTime": 1700533881856000,
-              "serviceName": "user-center",
-              "spanNameAnnotation": "",
-              "spanName": "cn.gov.zcy.paas.privilege.runtime.cache.ResourceMetaRuntimeService.getZcyUrlMatcher(cn.zcygov.paas.privilege.enums.ResourceTypeEnum type)",
-              "duration": 0,
-              "kind": 1,
-              "type": "http",
-              "value": "",
-              "error": false,
-              "sequence": 8,
-              "children": null
-            }
-          ]
-        },
-        {
-          "spanId": "6b8bcf62f71b7e3c",
-          "parentSpanId": "b081646445e24124",
-          "traceId": "76e90dad92baf5cdb1637066cf6854a4",
-          "startTime": 1700533881855000,
-          "endTime": 1700533881855000,
-          "serviceName": "user-center",
-          "spanNameAnnotation": "",
-          "spanName": "cn.gov.zcy.paas.privilege.runtime.cache.ResourceMetaRuntimeService.getZcyUrlMatcher(cn.zcygov.paas.privilege.enums.ResourceTypeEnum type)",
-          "duration": 0,
-          "kind": 1,
-          "type": "http",
-          "value": "",
-          "error": false,
-          "sequence": 7,
-          "children": null
-        },
-        {
-          "spanId": "da8ff76690477625",
-          "parentSpanId": "b081646445e24124",
-          "traceId": "76e90dad92baf5cdb1637066cf6854a4",
-          "startTime": 1700533881856000,
-          "endTime": 1700533881856000,
-          "serviceName": "user-center",
-          "spanNameAnnotation": "",
-          "spanName": "cn.gov.zcy.paas.privilege.runtime.cache.ResourceMetaRuntimeService.getZcyUrlMatcher(cn.zcygov.paas.privilege.enums.ResourceTypeEnum type)",
-          "duration": 0,
-          "kind": 1,
-          "type": "http",
-          "value": "",
-          "error": false,
-          "sequence": 8,
-          "children": null
+    // handleExpand (node) { // 点击节点操作
+    //   node.expand = !node.expand
+    //   if (node.children && node.children.length) {
+    //     this.setTreeStatus(node.children, node.expand)
+    //   }
+    // },
+    // setTreeStatus (node, status) { // 隐藏节点
+    //   node.forEach((item) => {
+    //     item.visible = status
+    //     if (item.children && item.children.length) {
+    //       item.expand = status
+    //       this.setTreeStatus(item.children, status)
+    //     }
+    //   })
+    // },
+    handleExpand (node) { // 点击节点操作
+      node.expand = !node.expand
+      if (node.expand && node.children.length) {
+        node.children.forEach((item) => { // 将点击节点的子节点显示
+          item.visible = node.expand
+        })
+      } else if (!node.expand) {
+        this.handleClose(node.children) // 隐藏点击节点的子孙节点
+      }
+    },
+    handleClose (node) { // 隐藏节点
+      node.forEach((item) => {
+        item.visible = false
+        if (item.children.length) {
+          item.expand = false
+          this.handleClose(item.children)
         }
-      ]
-      const treeData = XEUtils.toArrayTree(data, {
-        key: "spanId",
-        parentKey: "parentSpanId",
-        children: "children",
-        mapChildren: "_X_ROW_CHILD"
       })
-      console.log('treeData1:', JSON.parse(JSON.stringify(treeData)))
-      XEUtils.eachTree(treeData, (item, index, items, paths, parent, nodes) => {
-        // 层级
-        item._LEVEL = nodes.length - 1
-        // 是否展开
-        item._EXPAND = false
-        // 是否可视
-        item._VISIBLE = !item._LEVEL
-        // 是否有子节点
-        item._HAS_CHILDREN = item.children && item.children.length > 0
-        // 是否叶子节点
-        item._IS_LEAF = !item._HAS_CHILDREN
+    },
+    // 递归处理
+    flatten_recursion (data, arr = [], parent = null, level = 0, visible = true, children = [], insert = null) {
+      arr.push({...data, level, parent, visible, children})
+      if (insert !== null) {
+        arr[insert].children.push(arr[arr.length - 1])
+      }
+      if (data.children) {
+        insert = arr.length - 1
+        data.children.forEach((item) => {
+          this.flatten_recursion(item, arr, arr[arr.length - 1], level + 1, data.expand, [], insert)
+        })
+      }
+      return arr
+    },
+    // 迭代处理
+    flatten_iteration (tree) {
+      let flatData = []
+      let stack = [...tree]
+      let parentIndex = {} // 存储level的索引
+      while (stack.length) {
+        let node = stack.shift()
+        if (!node.level) {
+          node.level = 0
+          node.visible = true
+        }
+        if (node.children) {
+          node.expand = true
+          parentIndex[node.level] = flatData.length // node的level索引等于flatData的长度，因为接下来push的就是node
+          stack.unshift(...node.children.map(item => { // 设置子类的level
+            return {...item, level: node.level + 1, visible: node.expand}
+          }))
+        }
+        flatData.push({...node, children: []})
+        if (node.level !== 0) { // 添加子类引用（只要不是第一层，node肯定有父节点）
+          flatData[parentIndex[node.level - 1]].children.push(flatData[flatData.length - 1]) // 往当前的node的父节点的children属性添加本身
+        }
+      }
+      return flatData
+    },
+    handleScroll () {
+      requestAnimationFrame(() => {
+        const scrollTop = this.$refs.wrap.scrollTop
+        this.start = Math.floor(scrollTop / this.itemSize)
+        this.startOffset = scrollTop - (scrollTop % this.itemSize)
       })
-      console.log('treeData2:', Object.freeze(treeData))
-      this.tree = treeData
-      this.refreshTree()
-    },
-    // 切换树节点的展开、收缩
-    toggleTreeNode (row) {
-      if (row._HAS_CHILDREN) {
-        this.setTreeExpand(row, !row._EXPAND)
-      }
-    },
-    // 设置树节点的展开、收缩
-    setTreeExpand (row, isExpand) {
-      const matchObj = XEUtils.findTree(this.tree, item => item === row)
-      row._EXPAND = isExpand
-      if (matchObj) {
-        XEUtils.eachTree(matchObj.item.children, (item, index, items, path, parent) => {
-          item._VISIBLE = parent ? parent._EXPAND && parent._VISIBLE : isExpand
-        })
-      }
-      this.refreshTree()
-    },
-    // 展开、收缩所有树节点
-    allTreeExpand (isExpand) {
-      if (isExpand) {
-        XEUtils.eachTree(this.tree, item => {
-          item._EXPAND = item._HAS_CHILDREN
-          item._VISIBLE = true
-        })
-      } else {
-        XEUtils.eachTree(this.tree, item => {
-          item._EXPAND = false
-          item._VISIBLE = !item._LEVEL
-        })
-      }
-      this.refreshTree()
-    },
-    refreshTree () {
-      const treeList = XEUtils.toTreeArray(this.tree)
-      this.fullList = treeList
-      this.list = treeList.filter(item => item._VISIBLE)
     }
   },
-  mounted () {
-    this.loadTree(10)
+  created () {
+    this.treeData = this.flatten_iteration(this.data)
+    console.log(this.treeData)
   },
-  beforeDestroy () {
+  mounted () {
+
   }
 }
 </script>
 
 <style scoped>
-.my-tree {
-  padding: 0 10px;
-  border: 1px solid #e8eaec;
-  background-color: #fff;
+.wrap {
+  overflow: auto;
+  margin: auto;
 }
-.my-tree .my-tree-item {
-  height: 32px;
-  line-height: 32px;
+.invent-space {
+  float: left;
 }
-.my-tree .my-tree-item.has-child .tree-icon {
-  visibility: visible;
-  transition: all 0.3s;
+.container {
+  margin: 0 auto;
+  padding: 0;
+  overflow-x: hidden;
 }
-.my-tree .my-tree-item.is-expand .tree-icon {
-  transform: rotate(90deg);
+.tree-item {
+  padding: 2px 0;
+  /*white-space: nowrap;*/
+  /*text-overflow: ellipsis;*/
+  /*overflow: hidden;*/
 }
-.my-tree .tree-icon {
-  cursor: pointer;
-  width: 20px;
-  line-height: 20px;
-  text-align: center;
-  visibility: hidden;
-  user-select: none;
+.icon-tree {
+  color: #ff9600;
 }
+
 </style>
