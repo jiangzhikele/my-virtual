@@ -135,13 +135,11 @@ export default {
 
     // 计算位置
     calcPosition () {
-      const len = this.dataSource.length
-      const last = len - 1
+      const last = this.dataSource.length - 1
       // 撑起整个滚动条，高度为 itemSize * length,动态高度则需要获取其offsetMap
       const wrapHeight = this.getItemOffset(last) + this.getItemSize(last)
       // 滚动条高度
       const offsetTop = this.getItemOffset(this.start)
-
       // 设置dom位置
       this.tableClass.forEach(className => {
         const el = this.$el.querySelector(className)
@@ -205,7 +203,7 @@ export default {
   },
   beforeDestroy () {
     if (this.scroller) {
-      this.scroller.removeEventListener('scroll', this.onScroll)
+      this.scroller.removeEventListener('scroll', this.scrollEvent)
     }
   }
 }

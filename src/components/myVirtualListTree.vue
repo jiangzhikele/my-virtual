@@ -24,6 +24,7 @@
 
 <script>
 export default {
+  name: 'MyVirtualListTree',
   props: {
     screenHeight: {
       type: Number,
@@ -518,7 +519,6 @@ export default {
   },
   created () {
     this.treeData = this.flatten_iteration(this.data)
-    console.log(this.treeData)
   },
   mounted () {
 

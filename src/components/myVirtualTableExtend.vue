@@ -223,7 +223,7 @@ export default {
   },
   beforeDestroy () {
     if (this.scroller) {
-      this.scroller.removeEventListener('scroll', this.onScroll)
+      this.scroller.removeEventListener('scroll', this.scrollEvent)
     }
   }
 }
