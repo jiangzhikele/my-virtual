@@ -16,6 +16,7 @@
               :class="row.expand ? 'ant-table-row-expanded' : 'ant-table-row-collapsed'"
               @click="onExpand(row)">
           </div>
+        <i v-else :style="`margin-left: 30px`"/>
         {{ text }}
       </template>
     </a-table>
@@ -80,16 +81,6 @@ export default {
   },
 
   methods: {
-    // onExpand (row) {
-    //   console.log(row)
-    //   row.expand = !row.expand
-    //   if (row.expand) {
-    //     this.expandedRowKeys.push(row[this.id])
-    //   } else {
-    //     this.expandedRowKeys = this.expandedRowKeys.filter(key => key !== row[this.id])
-    //   }
-    // },
-
     onExpand (row) {
       row.expand = !row.expand
       if (row.expand) {
@@ -101,56 +92,34 @@ export default {
 
     loadChildNodes (row) {
       const index = this.treeTemp.findIndex(item => item === row)
-      console.log(index)
       if (index === -1) return
-      console.log(index)
+      const level = row.level
+      const childCount = row.childCount || 0
+      let count = 0
       for (let i = index + 1; i < this.treeTemp.length; i++) {
         const curRow = this.treeTemp[i]
-        if (curRow.level !== row.level + 1) continue
+        if (curRow.level !== level + 1) continue
         curRow.visible = true
-        console.log(curRow)
+        count ++
+        if (count === childCount ) break
       }
       this.tree = this.treeTemp.filter(r => r.visible)
-      console.log(this.tree)
       this.doUpdate()
     },
 
     hideChildNodes (row) {
       const index = this.treeTemp.findIndex(item => item === row)
       if (index === -1) return
-
-      // 查找当前节点的所有子孙节点
       for (let i = index + 1; i < this.treeTemp.length; i++) {
         const curRow = this.treeTemp[i]
         if (curRow.level <= row.level) break
         curRow.visible = false
-        if (curRow.expand) {
-          curRow.expand = !curRow.expand
+        if (curRow.hasChild) {
+          curRow.expand = false
         }
       }
-      // 隐藏所有子孙节点
       this.tree = this.treeTemp.filter(r => r.visible)
       this.doUpdate()
-    },
-
-    handleExpand (node) { // 点击节点操作
-      node.expand = !node.expand
-      if (node.expand && node.children.length) {
-        node.children.forEach((item) => { // 将点击节点的子节点显示
-          item.visible = node.expand
-        })
-      } else if (!node.expand) {
-        this.handleClose(node.children) // 隐藏点击节点的子孙节点
-      }
-    },
-    handleClose (node) { // 隐藏节点
-      node.forEach((item) => {
-        item.visible = false
-        if (item.children.length) {
-          item.expand = false
-          this.handleClose(item.children)
-        }
-      })
     },
 
     // 初始化数据
@@ -305,6 +274,7 @@ export default {
           if (item[childrenName]) {
             item.expand = true
             item.hasChild = true
+            item.childCount = item[childrenName].length
             const newItem = { ...item };
             delete newItem[childrenName];
             result.push(newItem);
