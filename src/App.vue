@@ -40,12 +40,12 @@
     </div>
     <div style="margin-top: 40px; height: 400px; border: #555555 1px solid">
       <div style="text-align: center; height: 30px; font-size: larger; font-weight: bolder">vue2 table tree</div>
-      <my-virtual-table-tree
+      <myVirtualTableTree1
           :columns="columns"
           :data-source="tableTreeList"
           id="key"
           :scrollY="300">
-      </my-virtual-table-tree>
+      </myVirtualTableTree1>
     </div>
     <div style="margin-top: 40px; height: 400px; border: #555555 1px solid">
       <div style="text-align: center; height: 30px; font-size: larger; font-weight: bolder">vue2 table tree 2</div>
@@ -55,6 +55,17 @@
           id="key"
           :screenHeight="300">
       </myVirtualTableTree2>
+    </div>
+    <div style="margin-top: 40px; height: 400px; border: #555555 1px solid">
+      <div style="text-align: center; height: 30px; font-size: larger; font-weight: bolder">vue table tree 3 trace</div>
+      <myVirtualTableTree3
+          :data-source="tableTreeList3"
+          id="spanId"
+          parentId="parentSpanId"
+          :errSpanIds="errSpanIds"
+          :errAllSpanIds="errAllSpanIds"
+          :screenHeight="600">
+      </myVirtualTableTree3>
     </div>
     <div style="margin-top: 40px; height: 100px"/>
   </div>
@@ -66,8 +77,9 @@ import myVirtualTableFixHeight from "@/components/myVirtualTableFixHeight";
 import myVirtualTableDynamicHeight from "@/components/myVirtualTableDynamicHeight";
 import myVirtualTableExtend from "@/components/myVirtualTableExtend";
 import myVirtualListTree from "@/components/myVirtualListTree";
-import myVirtualTableTree from "@/components/myVirtualTableTree1";
+import myVirtualTableTree1 from "@/components/myVirtualTableTree1";
 import myVirtualTableTree2 from "@/components/myVirtualTableTree2";
+import myVirtualTableTree3 from "@/components/myVirtualTableTree3";
 
 export default {
   name: 'App',
@@ -76,9 +88,10 @@ export default {
     myVirtualTableDynamicHeight,
     myVirtualTableFixHeight,
     myVirtualTableExtend,
-    myVirtualTableTree,
     myVirtualListTree,
+    myVirtualTableTree1,
     myVirtualTableTree2,
+    myVirtualTableTree3,
   },
   data () {
     return {
@@ -470,25 +483,454 @@ export default {
           ],
         }
       ],
-      columns2: [
+      tableTreeList3: [
         {
-          title: 'index',
-          dataIndex: 'index',
-          key: 'index',
-          scopedSlots: { customRender: 'index' }
-        },
-        {
-          title: '内容',
-          dataIndex: 'text',
-          key: 'text'
-        },
-        {
-          title: '内容省略',
-          dataIndex: 'desc',
-          key: 'desc',
-          ellipsis: true
+          "spanId": "865ad356c36eb0ea",
+          "parentSpanId": "bbbbbbbbbbbbbbbb",
+          "traceId": "ded1d3002ba8876f768fa62e4eb96e95",
+          "startTime": 1701778948572000,
+          "endTime": 1701778948631000,
+          "serviceName": "web-middle",
+          "spanNameAnnotation": "",
+          "spanName": "/user/apps/getAppsBasicInfo",
+          "duration": 59000,
+          "kind": 2,
+          "type": "http",
+          "value": "",
+          "error": false,
+          "sequence": 0,
+          "children": [
+            {
+              "spanId": "782becf6a32fc45c",
+              "parentSpanId": "865ad356c36eb0ea",
+              "traceId": "ded1d3002ba8876f768fa62e4eb96e95",
+              "startTime": 1701778948572000,
+              "endTime": 1701778948631000,
+              "serviceName": "web-middle",
+              "spanNameAnnotation": "",
+              "spanName": "org.apache.catalina.core.StandardHostValve.invoke(org.apache.catalina.connector.Request request, org.apache.catalina.connector.Response response)",
+              "duration": 59000,
+              "kind": 1,
+              "type": "http",
+              "value": "",
+              "error": false,
+              "sequence": 0,
+              "children": [
+                {
+                  "spanId": "2341468d61470a91",
+                  "parentSpanId": "782becf6a32fc45c",
+                  "traceId": "ded1d3002ba8876f768fa62e4eb96e95",
+                  "startTime": 1701778948572000,
+                  "endTime": 1701778948631000,
+                  "serviceName": "web-middle",
+                  "spanNameAnnotation": "",
+                  "spanName": "org.springframework.web.servlet.FrameworkServlet.doGet(javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response)",
+                  "duration": 59000,
+                  "kind": 1,
+                  "type": "http",
+                  "value": "",
+                  "error": false,
+                  "sequence": 1,
+                  "children": [
+                    {
+                      "spanId": "774fc5d110897802",
+                      "parentSpanId": "2341468d61470a91",
+                      "traceId": "ded1d3002ba8876f768fa62e4eb96e95",
+                      "startTime": 1701778948572000,
+                      "endTime": 1701778948591000,
+                      "serviceName": "web-middle",
+                      "spanNameAnnotation": "",
+                      "spanName": "org.apache.dubbo.rpc.protocol.AbstractInvoker.invoke(org.apache.dubbo.rpc.Invocation inv)",
+                      "duration": 19000,
+                      "kind": 3,
+                      "type": "rpc",
+                      "value": "dubbo",
+                      "error": false,
+                      "sequence": 2,
+                      "children": [
+                        {
+                          "spanId": "900686bf086b0f6c",
+                          "parentSpanId": "774fc5d110897802",
+                          "traceId": "ded1d3002ba8876f768fa62e4eb96e95",
+                          "startTime": 1701778948572000,
+                          "endTime": 1701778948590000,
+                          "serviceName": "user-center",
+                          "spanNameAnnotation": "",
+                          "spanName": "cn.gov.zcy.paas.auth.service.AccessContextService:resolveUseHash(java.lang.String,java.lang.String,java.lang.String,cn.gov.zcy.paas.auth.dto.AccessEnvInfo)",
+                          "duration": 18000,
+                          "kind": 2,
+                          "type": "rpc",
+                          "value": "dubbo",
+                          "error": false,
+                          "sequence": 0,
+                          "children": [
+                            {
+                              "spanId": "240661e61da0b1c3",
+                              "parentSpanId": "900686bf086b0f6c",
+                              "traceId": "ded1d3002ba8876f768fa62e4eb96e95",
+                              "startTime": 1701778948572000,
+                              "endTime": 1701778948590000,
+                              "serviceName": "user-center",
+                              "spanNameAnnotation": "",
+                              "spanName": "org.apache.dubbo.rpc.proxy.AbstractProxyInvoker.invoke(org.apache.dubbo.rpc.Invocation invocation)",
+                              "duration": 18000,
+                              "kind": 1,
+                              "type": "http",
+                              "value": "",
+                              "error": false,
+                              "sequence": 0,
+                              "children": [
+                                {
+                                  "spanId": "4aabe295d0f981c8",
+                                  "parentSpanId": "240661e61da0b1c3",
+                                  "traceId": "ded1d3002ba8876f768fa62e4eb96e95",
+                                  "startTime": 1701778948581000,
+                                  "endTime": 1701778948586000,
+                                  "serviceName": "user-center",
+                                  "spanNameAnnotation": "",
+                                  "spanName": "redis.clients.jedis.BinaryJedis.get(byte[] key)",
+                                  "duration": 5000,
+                                  "kind": 3,
+                                  "type": "db",
+                                  "value": "redis",
+                                  "error": false,
+                                  "sequence": 5,
+                                  "children": null
+                                },
+                                {
+                                  "spanId": "b8e04e1d232fe9a6",
+                                  "parentSpanId": "240661e61da0b1c3",
+                                  "traceId": "ded1d3002ba8876f768fa62e4eb96e95",
+                                  "startTime": 1701778948586000,
+                                  "endTime": 1701778948589000,
+                                  "serviceName": "user-center",
+                                  "spanNameAnnotation": "",
+                                  "spanName": "redis.clients.jedis.BinaryJedis.get(byte[] key)",
+                                  "duration": 3000,
+                                  "kind": 3,
+                                  "type": "db",
+                                  "value": "redis",
+                                  "error": false,
+                                  "sequence": 7,
+                                  "children": null
+                                },
+                                {
+                                  "spanId": "0df5109c9a2af74a",
+                                  "parentSpanId": "240661e61da0b1c3",
+                                  "traceId": "ded1d3002ba8876f768fa62e4eb96e95",
+                                  "startTime": 1701778948589000,
+                                  "endTime": 1701778948590000,
+                                  "serviceName": "user-center",
+                                  "spanNameAnnotation": "",
+                                  "spanName": "cn.gov.zcy.paas.privilege.runtime.PrivilegeRuntimeServiceImpl.isResourcePermit(cn.gov.zcy.paas.user.dto.Operator operator, java.lang.String libraryCode, java.lang.String path, java.lang.String method)",
+                                  "duration": 1000,
+                                  "kind": 1,
+                                  "type": "http",
+                                  "value": "",
+                                  "error": false,
+                                  "sequence": 8,
+                                  "children": [
+                                    {
+                                      "spanId": "8382aacc35b68d50",
+                                      "parentSpanId": "0df5109c9a2af74a",
+                                      "traceId": "ded1d3002ba8876f768fa62e4eb96e95",
+                                      "startTime": 1701778948589000,
+                                      "endTime": 1701778948590000,
+                                      "serviceName": "user-center",
+                                      "spanNameAnnotation": "",
+                                      "spanName": "cn.gov.zcy.paas.privilege.runtime.ApiRuntimeServiceHelper.isResourcePermit(cn.gov.zcy.paas.user.dto.Operator operator, java.lang.String libraryCode, java.lang.String path, java.lang.String method)",
+                                      "duration": 1000,
+                                      "kind": 1,
+                                      "type": "http",
+                                      "value": "",
+                                      "error": false,
+                                      "sequence": 9,
+                                      "children": null
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "spanId": "7faddacb79d342e4",
+                      "parentSpanId": "2341468d61470a91",
+                      "traceId": "ded1d3002ba8876f768fa62e4eb96e95",
+                      "startTime": 1701778948591000,
+                      "endTime": 1701778948630000,
+                      "serviceName": "web-middle",
+                      "spanNameAnnotation": "",
+                      "spanName": "com.dtdream.vanyar.user.web.workbench.FrontFrameworkController.getAppsBasicInfo(java.lang.String host, java.lang.String path, javax.servlet.http.HttpServletRequest request, javax.servlet.http.HttpServletResponse response)",
+                      "duration": 39000,
+                      "kind": 1,
+                      "type": "http",
+                      "value": "",
+                      "error": false,
+                      "sequence": 4,
+                      "children": [
+                        {
+                          "spanId": "1ca90bec0a99eaaa",
+                          "parentSpanId": "7faddacb79d342e4",
+                          "traceId": "ded1d3002ba8876f768fa62e4eb96e95",
+                          "startTime": 1701778948591000,
+                          "endTime": 1701778948630000,
+                          "serviceName": "web-middle",
+                          "spanNameAnnotation": "",
+                          "spanName": "org.apache.dubbo.rpc.protocol.AbstractInvoker.invoke(org.apache.dubbo.rpc.Invocation inv)",
+                          "duration": 39000,
+                          "kind": 3,
+                          "type": "rpc",
+                          "value": "dubbo",
+                          "error": false,
+                          "sequence": 5,
+                          "children": [
+                            {
+                              "spanId": "cb4a125c7c485e93",
+                              "parentSpanId": "1ca90bec0a99eaaa",
+                              "traceId": "ded1d3002ba8876f768fa62e4eb96e95",
+                              "startTime": 1701778948591000,
+                              "endTime": 1701778948628000,
+                              "serviceName": "user-center",
+                              "spanNameAnnotation": "",
+                              "spanName": "com.dtdream.vanyar.privilege.service.WorkbenchService:getAppsBasicInfo(com.dtdream.vanyar.privilege.model.workbench.MenuQuery)",
+                              "duration": 37000,
+                              "kind": 2,
+                              "type": "rpc",
+                              "value": "dubbo",
+                              "error": false,
+                              "sequence": 0,
+                              "children": [
+                                {
+                                  "spanId": "248d2cee95f93355",
+                                  "parentSpanId": "cb4a125c7c485e93",
+                                  "traceId": "ded1d3002ba8876f768fa62e4eb96e95",
+                                  "startTime": 1701778948592000,
+                                  "endTime": 1701778948628000,
+                                  "serviceName": "user-center",
+                                  "spanNameAnnotation": "",
+                                  "spanName": "org.apache.dubbo.rpc.proxy.AbstractProxyInvoker.invoke(org.apache.dubbo.rpc.Invocation invocation)",
+                                  "duration": 36000,
+                                  "kind": 1,
+                                  "type": "http",
+                                  "value": "",
+                                  "error": false,
+                                  "sequence": 0,
+                                  "children": [
+                                    {
+                                      "spanId": "f650bac5f300e0c4",
+                                      "parentSpanId": "248d2cee95f93355",
+                                      "traceId": "ded1d3002ba8876f768fa62e4eb96e95",
+                                      "startTime": 1701778948591000,
+                                      "endTime": 1701778948614000,
+                                      "serviceName": "user-center",
+                                      "spanNameAnnotation": "",
+                                      "spanName": "cn.gov.zcy.paas.privilege.runtime.PrivilegeRuntimeServiceImpl.getAppsByDimForFront(cn.gov.zcy.paas.user.dto.Operator operator, java.lang.String cookieAppCode, java.lang.String path, java.lang.String curApp, java.lang.String host, java.lang.String libraryCode)",
+                                      "duration": 23000,
+                                      "kind": 1,
+                                      "type": "http",
+                                      "value": "",
+                                      "error": false,
+                                      "sequence": 9,
+                                      "children": [
+                                        {
+                                          "spanId": "d65fe8d625167b90",
+                                          "parentSpanId": "f650bac5f300e0c4",
+                                          "traceId": "ded1d3002ba8876f768fa62e4eb96e95",
+                                          "startTime": 1701778948591000,
+                                          "endTime": 1701778948614000,
+                                          "serviceName": "user-center",
+                                          "spanNameAnnotation": "",
+                                          "spanName": "cn.gov.zcy.paas.privilege.runtime.MenuRuntimeServiceHelper.getFrontApplicationWrapper(cn.gov.zcy.paas.user.dto.Operator operator, com.dtdream.vanyar.privilege.model.workbench.MenuQuery menuQuery)",
+                                          "duration": 23000,
+                                          "kind": 1,
+                                          "type": "http",
+                                          "value": "",
+                                          "error": false,
+                                          "sequence": 10,
+                                          "children": [
+                                            {
+                                              "spanId": "211ae5da6dee4399",
+                                              "parentSpanId": "d65fe8d625167b90",
+                                              "traceId": "ded1d3002ba8876f768fa62e4eb96e95",
+                                              "startTime": 1701778948591000,
+                                              "endTime": 1701778948593000,
+                                              "serviceName": "user-center",
+                                              "spanNameAnnotation": "",
+                                              "spanName": "cn.gov.zcy.paas.privilege.runtime.FunctionRuntimeService.getSubscribeExcludeAppSet(java.lang.String userType, java.lang.String tenantCode, java.lang.Long institutionId)",
+                                              "duration": 2000,
+                                              "kind": 1,
+                                              "type": "http",
+                                              "value": "",
+                                              "error": false,
+                                              "sequence": 22,
+                                              "children": [
+                                                {
+                                                  "spanId": "f0b09f0662167f16",
+                                                  "parentSpanId": "211ae5da6dee4399",
+                                                  "traceId": "ded1d3002ba8876f768fa62e4eb96e95",
+                                                  "startTime": 1701778948591000,
+                                                  "endTime": 1701778948593000,
+                                                  "serviceName": "user-center",
+                                                  "spanNameAnnotation": "",
+                                                  "spanName": "org.mybatis.spring.SqlSessionTemplate.selectList(java.lang.String statement, java.lang.Object parameter)",
+                                                  "duration": 2000,
+                                                  "kind": 1,
+                                                  "type": "http",
+                                                  "value": "",
+                                                  "error": false,
+                                                  "sequence": 23,
+                                                  "children": [
+                                                    {
+                                                      "spanId": "5acc3555f54fca5b",
+                                                      "parentSpanId": "f0b09f0662167f16",
+                                                      "traceId": "ded1d3002ba8876f768fa62e4eb96e95",
+                                                      "startTime": 1701778948591000,
+                                                      "endTime": 1701778948593000,
+                                                      "serviceName": "user-center",
+                                                      "spanNameAnnotation": "",
+                                                      "spanName": "org.apache.ibatis.executor.BaseExecutor.query(org.apache.ibatis.mapping.MappedStatement ms, java.lang.Object parameter, org.apache.ibatis.session.RowBounds rowBounds, org.apache.ibatis.session.ResultHandler resultHandler, org.apache.ibatis.cache.CacheKey key, org.apache.ibatis.mapping.BoundSql boundSql)",
+                                                      "duration": 2000,
+                                                      "kind": 1,
+                                                      "type": "http",
+                                                      "value": "",
+                                                      "error": false,
+                                                      "sequence": 24,
+                                                      "children": [
+                                                        {
+                                                          "spanId": "446e31b94e563ea2",
+                                                          "parentSpanId": "5acc3555f54fca5b",
+                                                          "traceId": "ded1d3002ba8876f768fa62e4eb96e95",
+                                                          "startTime": 1701778948591000,
+                                                          "endTime": 1701778948593000,
+                                                          "serviceName": "user-center",
+                                                          "spanNameAnnotation": "",
+                                                          "spanName": "com.mysql.jdbc.PreparedStatement.execute()",
+                                                          "duration": 2000,
+                                                          "kind": 3,
+                                                          "type": "db",
+                                                          "value": "mysql",
+                                                          "error": false,
+                                                          "sequence": 27,
+                                                          "children": null
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            },
+                                            {
+                                              "spanId": "bfce129292c83e55",
+                                              "parentSpanId": "d65fe8d625167b90",
+                                              "traceId": "ded1d3002ba8876f768fa62e4eb96e95",
+                                              "startTime": 1701778948597000,
+                                              "endTime": 1701778948602000,
+                                              "serviceName": "user-center",
+                                              "spanNameAnnotation": "",
+                                              "spanName": "cn.gov.zcy.paas.privilege.runtime.FunctionRuntimeService.getOperatorFunctionSet(cn.gov.zcy.paas.user.dto.Operator operator, java.lang.String libraryCode)",
+                                              "duration": 5000,
+                                              "kind": 1,
+                                              "type": "http",
+                                              "value": "",
+                                              "error": false,
+                                              "sequence": 11,
+                                              "children": null
+                                            },
+                                            {
+                                              "spanId": "492653b73133773e",
+                                              "parentSpanId": "d65fe8d625167b90",
+                                              "traceId": "ded1d3002ba8876f768fa62e4eb96e95",
+                                              "startTime": 1701778948602000,
+                                              "endTime": 1701778948605000,
+                                              "serviceName": "user-center",
+                                              "spanNameAnnotation": "",
+                                              "spanName": "cn.gov.zcy.paas.privilege.runtime.FunctionRuntimeService.getSubscribeExcludeMenuSet(java.lang.String userType, java.util.List tenantCodes, java.lang.Long institutionId)",
+                                              "duration": 3000,
+                                              "kind": 1,
+                                              "type": "http",
+                                              "value": "",
+                                              "error": false,
+                                              "sequence": 16,
+                                              "children": [
+                                                {
+                                                  "spanId": "58b5e105f8a9edef",
+                                                  "parentSpanId": "492653b73133773e",
+                                                  "traceId": "ded1d3002ba8876f768fa62e4eb96e95",
+                                                  "startTime": 1701778948602000,
+                                                  "endTime": 1701778948605000,
+                                                  "serviceName": "user-center",
+                                                  "spanNameAnnotation": "",
+                                                  "spanName": "org.mybatis.spring.SqlSessionTemplate.selectList(java.lang.String statement, java.lang.Object parameter)",
+                                                  "duration": 3000,
+                                                  "kind": 1,
+                                                  "type": "http",
+                                                  "value": "",
+                                                  "error": false,
+                                                  "sequence": 17,
+                                                  "children": [
+                                                    {
+                                                      "spanId": "9e0ad20e015ff42c",
+                                                      "parentSpanId": "58b5e105f8a9edef",
+                                                      "traceId": "ded1d3002ba8876f768fa62e4eb96e95",
+                                                      "startTime": 1701778948602000,
+                                                      "endTime": 1701778948605000,
+                                                      "serviceName": "user-center",
+                                                      "spanNameAnnotation": "",
+                                                      "spanName": "org.apache.ibatis.executor.BaseExecutor.query(org.apache.ibatis.mapping.MappedStatement ms, java.lang.Object parameter, org.apache.ibatis.session.RowBounds rowBounds, org.apache.ibatis.session.ResultHandler resultHandler, org.apache.ibatis.cache.CacheKey key, org.apache.ibatis.mapping.BoundSql boundSql)",
+                                                      "duration": 3000,
+                                                      "kind": 1,
+                                                      "type": "http",
+                                                      "value": "",
+                                                      "error": false,
+                                                      "sequence": 18,
+                                                      "children": [
+                                                        {
+                                                          "spanId": "410e2627facbfacb",
+                                                          "parentSpanId": "9e0ad20e015ff42c",
+                                                          "traceId": "ded1d3002ba8876f768fa62e4eb96e95",
+                                                          "startTime": 1701778948603000,
+                                                          "endTime": 1701778948605000,
+                                                          "serviceName": "user-center",
+                                                          "spanNameAnnotation": "",
+                                                          "spanName": "com.mysql.jdbc.PreparedStatement.execute()",
+                                                          "duration": 2000,
+                                                          "kind": 3,
+                                                          "type": "db",
+                                                          "value": "mysql",
+                                                          "error": true,
+                                                          "sequence": 21,
+                                                          "children": null
+                                                        }
+                                                      ]
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         }
       ],
+      errSpanIds: ['410e2627facbfacb'],
+      errAllSpanIds: ['9e0ad20e015ff42c', '58b5e105f8a9edef', '492653b73133773e', 'd65fe8d625167b90', '248d2cee95f93355', '1ca90bec0a99eaaa', 'cb4a125c7c485e93', '7faddacb79d342e4', 'f650bac5f300e0c4', '2341468d61470a91', '782becf6a32fc45c', '865ad356c36eb0ea']
     }
   },
   methods: {
