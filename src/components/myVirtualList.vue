@@ -1,8 +1,9 @@
 <template>
+  <!-- 可视区域 -->
   <div ref="list" class="list-container" @scroll.passive="scrollEvent($event)" :style="{ height: screenHeight + 'px' }">
-    <!-- 中间的可滚动区域，z-index=-1，高度和真实列表相同，目的是出现滚动条 -->
+    <!-- 可滚动区域，z-index=-1，高度和真实列表相同，目的是出现滚动条 -->
     <div class="list-phantom" :style="{ height: listHeight + 'px' }"></div>
-    <!-- 最上层的可视区列表，数据和偏移距离随着滚动距离的变化而变化 -->
+    <!-- 可视区列表，数据和偏移距离随着滚动距离的变化而变化 -->
     <!-- 也可以使用paddingTop 和 paddingBottom -->
     <div class="list" :style="{ transform: getTransform }">
       <!-- dom 对比，此处需要key唯一，否则缓冲的数据会全部重新渲染 -->

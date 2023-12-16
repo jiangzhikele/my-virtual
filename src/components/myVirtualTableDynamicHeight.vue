@@ -39,7 +39,7 @@ export default {
   },
   data () {
     return {
-      tableClass: ['.ant-table-scroll .ant-table-body', '.ant-table-fixed-left .ant-table-body-inner', '.ant-table-fixed-right .ant-table-body-inner'],
+      tableClass: '.ant-table-body',
       start: 0,
       end: 0,
       screenHeight: 0,
@@ -64,6 +64,9 @@ export default {
         total += size
       }
       return res
+    },
+    wrapHeight () {
+      return this.itemSize * this.dataSource.length
     }
   },
   methods: {
@@ -135,36 +138,31 @@ export default {
 
     // 计算位置
     calcPosition () {
+      if (!this.scroller) return
       const last = this.dataSource.length - 1
       // 撑起整个滚动条，高度为 itemSize * length,动态高度则需要获取其offsetMap
       const wrapHeight = this.getItemOffset(last) + this.getItemSize(last)
       // 滚动条高度
       const offsetTop = this.getItemOffset(this.start)
-      // 设置dom位置
-      this.tableClass.forEach(className => {
-        const el = this.$el.querySelector(className)
-        if (!el) return
-
-        // 创建wrapEl、innerEl
-        if (!el.wrapEl) {
-          const wrapEl = document.createElement('div')
-          const innerEl = document.createElement('div')
-          wrapEl.appendChild(innerEl)
-          innerEl.appendChild(el.children[0])
-          el.insertBefore(wrapEl, el.firstChild)
-          el.wrapEl = wrapEl
-          el.innerEl = innerEl
-        }
-
-        if (el.wrapEl) {
-          // 设置高度
-          el.wrapEl.style.height = wrapHeight + 'px'
-          // 设置transform撑起高度
-          el.innerEl.style.transform = `translateY(${offsetTop}px)`
-          // 设置paddingTop撑起高度
-          // el.innerEl.style.paddingTop = `${offsetTop}px`
-        }
-      })
+      const el = this.scroller
+      // 创建新dom元素，替换原有样式
+      if (!el.wrapEl) {
+        const wrapEl = document.createElement('div')
+        const innerEl = document.createElement('div')
+        wrapEl.appendChild(innerEl)
+        innerEl.appendChild(el.children[0])
+        el.insertBefore(wrapEl, el.firstChild)
+        el.wrapEl = wrapEl
+        el.innerEl = innerEl
+      }
+      if (el.wrapEl) {
+        // 设置高度
+        el.wrapEl.style.height = wrapHeight + 'px'
+        // 设置transform撑起高度
+        el.innerEl.style.transform = `translateY(${offsetTop}px)`
+        // 设置paddingTop撑起高度
+        // el.innerEl.style.paddingTop = `${offsetTop}px`
+      }
     },
 
     // 获取高度offsetMap
@@ -189,7 +187,7 @@ export default {
 
     // 初始化数据
     initData () {
-      this.scroller = this.$el.querySelector('.ant-table-body')
+      this.scroller = this.$el.querySelector(this.tableClass)
       this.$nextTick(() => {
         this.handleScroll()
       })
