@@ -1,11 +1,11 @@
 <template>
   <div>
     <a-table
-      :pagination="false"
-      :columns="columns"
-      :row-key="id"
-      :scroll="{y: scrollY }"
-      :data-source="visibleData">
+        :pagination="false"
+        :columns="columns"
+        :row-key="id"
+        :scroll="{y: scrollY }"
+        :data-source="visibleData">
     </a-table>
   </div>
 </template>
@@ -14,7 +14,7 @@
 // import Table from 'ant-design-vue/lib/table'
 
 export default {
-  name: 'MyVirtualTableDynamicHeight',
+  name: 'MyVirtualTableFixHeight2',
   components: {
     // ATable: Table
   },
@@ -46,8 +46,6 @@ export default {
       buffer: 100,
       // antd table 高度默认为54
       itemSize: 54,
-      // 临时保存当前渲染的visibleData数据高度
-      offsetBak: {},
       visibleData: []
     }
   },
@@ -55,16 +53,14 @@ export default {
     // 计算出每个item（的key值）到滚动容器顶部的距离
     // id 代表每行数据的唯一键
     // itemSize 代表每行数据的固定高度
-    // offsetBak 将数据先缓存起来
     // dataSource 数据源
-    offsetMap ({ id, itemSize, offsetBak, dataSource }) {
+    offsetMap ({ id, itemSize, dataSource }) {
       const res = {}
       let total = 0
       for (let i = 0; i < dataSource.length; i++) {
         const key = dataSource[i][id]
         res[key] = total
-        // 当前行的高度重新计算
-        total += offsetBak[key] || itemSize
+        total += itemSize
       }
       return res
     }
@@ -79,26 +75,10 @@ export default {
     },
     // 处理滚动事件
     handleScroll () {
-      // 当前页面渲染的dom高度重新计算
-      this.updateOffset()
       // 计算visibleData
       this.calcVisibleData()
       // 计算offset位置
       this.calcPosition()
-    },
-
-    updateOffset () {
-      const rows = this.$el.querySelectorAll('.ant-table-body .ant-table-tbody .ant-table-row')
-      Array.from(rows).forEach((row, index) => {
-        const item = this.visibleData[index]
-        if (!item) return
-        // 计算表格行的高度
-        const offsetHeight = row.offsetHeight
-        const key = item[this.id]
-        if (this.offsetBak[key] !== offsetHeight) {
-          this.$set(this.offsetBak, key, offsetHeight)
-        }
-      })
     },
 
     calcVisibleData () {
@@ -141,7 +121,7 @@ export default {
       if (!this.scroller) return
       const last = this.dataSource.length - 1
       // 撑起整个滚动条，高度为 itemSize * length,动态高度则需要获取其offsetMap
-      const wrapHeight = this.getItemOffset(last) + this.getItemSize(last)
+      const wrapHeight = this.getItemOffset(last) + this.itemSize
       // 滚动条高度
       const offsetTop = this.getItemOffset(this.start)
       const el = this.scroller
@@ -172,17 +152,6 @@ export default {
         return this.offsetMap[item[this.id]] || 0
       }
       return 0
-    },
-
-    // 获取行高度
-    getItemSize (index) {
-      if (index <= -1) return 0
-      const item = this.dataSource[index]
-      if (item) {
-        const key = item[this.id]
-        return this.offsetMap[key] || this.itemSize
-      }
-      return this.itemSize
     },
 
     // 初始化数据
