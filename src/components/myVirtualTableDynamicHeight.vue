@@ -179,8 +179,7 @@ export default {
       if (index <= -1) return 0
       const item = this.dataSource[index]
       if (item) {
-        const key = item[this.id]
-        return this.offsetMap[key] || this.itemSize
+        return this.offsetBak[item[this.id]] || this.itemSize
       }
       return this.itemSize
     },
