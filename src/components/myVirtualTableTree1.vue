@@ -4,14 +4,10 @@
       :pagination="false"
       :columns="columns"
       :row-key="id"
-      :scroll="{y: scrollY }"
+      :scroll="{y: screenHeight }"
       :expandedRowKeys="expandedRowKeys"
       @expand="onTableExpand"
       :data-source="visibleData">
-      <!-- 支持自定义头部 -->
-      <template v-for="slot in Object.keys($slots)" :slot="slot">
-        <slot :name="slot"></slot>
-      </template>
     </a-table>
   </div>
 </template>
@@ -21,7 +17,7 @@
 // import Table from 'ant-design-vue/lib/table'
 
 export default {
-  name: 'MyVirtualTableDemo',
+  name: 'MyVirtualTableTree1',
   components: {
     // ATable: Table
   },
@@ -39,18 +35,17 @@ export default {
       type: String,
       default: 'id'
     },
-    scrollY: {
+    screenHeight: {
       type: Number,
       default: 300
     }
   },
   data () {
     return {
-      tableClass: ['.ant-table-scroll .ant-table-body', '.ant-table-fixed-left .ant-table-body-inner', '.ant-table-fixed-right .ant-table-body-inner'],
+      tableClass: '.ant-table-body',
       expandedRowKeys: [],
       tree: [],
       start: 0,
-      screenHeight: 0,
       // antd table 高度默认为54
       itemSize: 54
     }
@@ -102,6 +97,7 @@ export default {
 
     // 处理滚动事件
     handleScroll () {
+      if (!this.scroller) return
       const rows = this.$el.querySelectorAll('.ant-table-body .ant-table-tbody .ant-table-row')
       Array.from(rows).forEach((row, index) => {
         const item = this.visibleData[index]
@@ -120,28 +116,26 @@ export default {
       this.start = Math.floor(scrollTop / this.itemSize)
       const wrapHeight = this.itemSize * this.tree.length
       const offsetTop = scrollTop - (scrollTop % this.itemSize)
-      this.tableClass.forEach(className => {
-        const el = this.$el.querySelector(className)
-        if (!el) return
-        // 创建wrapEl、innerEl
-        if (!el.wrapEl) {
-          const wrapEl = document.createElement('div')
-          const innerEl = document.createElement('div')
-          wrapEl.appendChild(innerEl)
-          innerEl.appendChild(el.children[0])
-          el.insertBefore(wrapEl, el.firstChild)
-          el.wrapEl = wrapEl
-          el.innerEl = innerEl
-        }
-        if (el.wrapEl) {
-          // 设置高度
-          el.wrapEl.style.height = wrapHeight + 'px'
-          // 设置transform撑起高度
-          el.innerEl.style.transform = `translateY(${offsetTop}px)`
-          // 设置paddingTop撑起高度
-          // el.innerEl.style.paddingTop = `${offsetTop}px`
-        }
-      })
+      const el = this.scroller
+      if (!el) return
+      // 创建wrapEl、innerEl
+      if (!el.wrapEl) {
+        const wrapEl = document.createElement('div')
+        const innerEl = document.createElement('div')
+        wrapEl.appendChild(innerEl)
+        innerEl.appendChild(el.children[0])
+        el.insertBefore(wrapEl, el.firstChild)
+        el.wrapEl = wrapEl
+        el.innerEl = innerEl
+      }
+      if (el.wrapEl) {
+        // 设置高度
+        el.wrapEl.style.height = wrapHeight + 'px'
+        // 设置transform撑起高度
+        el.innerEl.style.transform = `translateY(${offsetTop}px)`
+        // 设置paddingTop撑起高度
+        // el.innerEl.style.paddingTop = `${offsetTop}px`
+      }
     },
     // 初始化数据
     initData () {
@@ -184,7 +178,6 @@ export default {
     this.tree = this.flatArray(this.dataSource)
   },
   mounted () {
-    this.screenHeight = this.scrollY
     this.initData()
   },
   beforeDestroy () {

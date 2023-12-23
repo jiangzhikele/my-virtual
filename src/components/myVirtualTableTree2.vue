@@ -52,7 +52,7 @@ export default {
       tree: [],
       treeTemp: [],
       expandedRowKeys: [],
-      tableClass: ['.ant-table-scroll .ant-table-body', '.ant-table-fixed-left .ant-table-body-inner', '.ant-table-fixed-right .ant-table-body-inner'],
+      tableClass: '.ant-table-body',
       start: 0,
       end: 0,
       itemSize: 60,
@@ -70,8 +70,8 @@ export default {
         const key = tree[i][id]
         res[key] = total
 
-        const size = typeof offsetBak[key] === 'number' ? offsetBak[key] : itemSize
-        total += size
+        // 当前行的高度重新计算
+        total += offsetBak[key] || itemSize
       }
       return res
     },
@@ -210,37 +210,33 @@ export default {
 
     // 计算位置
     calcPosition () {
+      if (!this.scroller) return
       const last = this.tree.length - 1
       // 计算内容总高度
       const wrapHeight = this.getItemOffset(last) + this.getItemSize(last)
       // 计算当前滚动位置需要撑起的高度
       const offsetTop = this.getItemOffset(this.start)
-
+      const el = this.scroller
       // 设置dom位置
-      this.tableClass.forEach(className => {
-        const el = this.$el.querySelector(className)
-        if (!el) return
+      // 创建新dom元素，替换原有样式
+      if (!el.wrapEl) {
+        const wrapEl = document.createElement('div')
+        const innerEl = document.createElement('div')
+        wrapEl.appendChild(innerEl)
+        innerEl.appendChild(el.children[0])
+        el.insertBefore(wrapEl, el.firstChild)
+        el.wrapEl = wrapEl
+        el.innerEl = innerEl
+      }
 
-        // 创建wrapEl、innerEl
-        if (!el.wrapEl) {
-          const wrapEl = document.createElement('div')
-          const innerEl = document.createElement('div')
-          wrapEl.appendChild(innerEl)
-          innerEl.appendChild(el.children[0])
-          el.insertBefore(wrapEl, el.firstChild)
-          el.wrapEl = wrapEl
-          el.innerEl = innerEl
-        }
-
-        if (el.wrapEl) {
-          // 设置高度
-          el.wrapEl.style.height = wrapHeight + 'px'
-          // 设置transform撑起高度
-          el.innerEl.style.transform = `translateY(${offsetTop}px)`
-          // 设置paddingTop撑起高度
-          // el.innerEl.style.paddingTop = `${offsetTop}px`
-        }
-      })
+      if (el.wrapEl) {
+        // 设置高度
+        el.wrapEl.style.height = wrapHeight + 'px'
+        // 设置transform撑起高度
+        el.innerEl.style.transform = `translateY(${offsetTop}px)`
+        // 设置paddingTop撑起高度
+        // el.innerEl.style.paddingTop = `${offsetTop}px`
+      }
     },
 
     // 获取某条数据offsetTop
@@ -315,7 +311,6 @@ export default {
   created () {
     this.treeTemp = this.flatArray(this.dataSource)
     this.tree = this.treeTemp.filter(r => r.visible)
-    console.log('this.tree:', this.treeTemp)
   },
   beforeDestroy () {
     this.destroy()

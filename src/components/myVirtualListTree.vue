@@ -1,9 +1,9 @@
 <template>
-  <div class="wrap" ref="wrap" @scroll="handleScroll" :style="{ height: screenHeight + 'px' }">
-    <div class="invent-space" :style="{ height: contentHeight + 'px' }"></div>
-    <div class="container" :style="{ transform: getTransform }">
+  <div class="list-container" ref="list" @scroll.passive="handleScroll" :style="{ height: screenHeight + 'px' }">
+    <div class="list-phantom" :style="{ height: listHeight + 'px' }"></div>
+    <div class="list" :style="{ transform: getTransform }">
       <div
-          class="tree-item"
+          class="list-item"
           v-for="(item, i) in visibleData"
           :key="i"
           v-show="item.visible"
@@ -406,11 +406,8 @@ export default {
     }
   },
   computed: {
-    contentHeight () { // 已展示的树节点高度，过滤掉未展开显示的
-      return (
-          (this.treeData || []).filter(item => item.visible).length *
-          this.itemSize
-      )
+    listHeight () {
+      return (this.treeData || []).length * this.itemSize
     },
     getTransform () {
       // return `translate3d(0,${this.startOffset}px,0)`
@@ -424,7 +421,7 @@ export default {
     },
     visibleCount () {
       // 向上取整，再增加缓冲区,多加一屏
-      return Math.ceil(this.screenHeight / this.itemSize) * 2
+      return Math.ceil(this.screenHeight / this.itemSize) + 5
     },
     end () {
       // 此时的结束索引
@@ -436,21 +433,6 @@ export default {
     },
   },
   methods: {
-    // handleExpand (node) { // 点击节点操作
-    //   node.expand = !node.expand
-    //   if (node.children && node.children.length) {
-    //     this.setTreeStatus(node.children, node.expand)
-    //   }
-    // },
-    // setTreeStatus (node, status) { // 隐藏节点
-    //   node.forEach((item) => {
-    //     item.visible = status
-    //     if (item.children && item.children.length) {
-    //       item.expand = status
-    //       this.setTreeStatus(item.children, status)
-    //     }
-    //   })
-    // },
     handleExpand (node) { // 点击节点操作
       node.expand = !node.expand
       if (node.expand && node.children.length) {
@@ -470,7 +452,6 @@ export default {
         }
       })
     },
-    // 递归处理
     flatten_recursion (data, arr = [], parent = null, level = 0, visible = true, children = [], insert = null) {
       arr.push({...data, level, parent, visible, children})
       if (insert !== null) {
@@ -511,7 +492,7 @@ export default {
     },
     handleScroll () {
       requestAnimationFrame(() => {
-        const scrollTop = this.$refs.wrap.scrollTop
+        const scrollTop = this.$refs.list.scrollTop
         this.start = Math.floor(scrollTop / this.itemSize)
         this.startOffset = scrollTop - (scrollTop % this.itemSize)
       })
@@ -521,32 +502,28 @@ export default {
     this.treeData = this.flatten_iteration(this.data)
   },
   mounted () {
-
   }
 }
 </script>
 
 <style scoped>
-.wrap {
+.list-container {
   overflow: auto;
   margin: auto;
 }
-.invent-space {
+.list-phantom {
   float: left;
 }
-.container {
+.list {
   margin: 0 auto;
   padding: 0;
   overflow-x: hidden;
 }
-.tree-item {
+.list-item {
   padding: 2px 0;
   /*white-space: nowrap;*/
   /*text-overflow: ellipsis;*/
   /*overflow: hidden;*/
-}
-.icon-tree {
-  color: #ff9600;
 }
 
 </style>

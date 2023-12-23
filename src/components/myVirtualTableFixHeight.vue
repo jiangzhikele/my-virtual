@@ -4,7 +4,7 @@
       :pagination="false"
       :columns="columns"
       :row-key="id"
-      :scroll="{y: scrollY }"
+      :scroll="{y: screenHeight }"
       :data-source="visibleData">
     </a-table>
   </div>
@@ -31,7 +31,7 @@ export default {
       type: String,
       default: 'id'
     },
-    scrollY: {
+    screenHeight: {
       type: Number,
       default: 300
     }
@@ -40,7 +40,6 @@ export default {
     return {
       tableClass: '.ant-table-body',
       start: 0,
-      screenHeight: 0,
       // antd table 高度默认为54
       itemSize: 54
     }
@@ -113,7 +112,6 @@ export default {
     }
   },
   mounted () {
-    this.screenHeight = this.scrollY
     this.initData()
   },
   beforeDestroy () {

@@ -4,7 +4,7 @@
       :pagination="false"
       :columns="columns"
       :row-key="id"
-      :scroll="{y: scrollY }"
+      :scroll="{y: screenHeight }"
       :expandedRowKeys="expandedRowKeys"
       @expand="onTableExpand"
       :data-source="visibleData">
@@ -38,18 +38,17 @@ export default {
       type: String,
       default: 'id'
     },
-    scrollY: {
+    screenHeight: {
       type: Number,
       default: 300
     }
   },
   data () {
     return {
-      tableClass: ['.ant-table-scroll .ant-table-body', '.ant-table-fixed-left .ant-table-body-inner', '.ant-table-fixed-right .ant-table-body-inner'],
+      tableClass: '.ant-table-body',
       expandedRowKeys: ['1', '3', '5', '7'],
       start: 0,
       end: 0,
-      screenHeight: 0,
       buffer: 100,
       // antd table 高度默认为54
       itemSize: 54,
@@ -60,6 +59,10 @@ export default {
   },
   computed: {
     // 计算出每个item（的key值）到滚动容器顶部的距离
+    // id 代表每行数据的唯一键
+    // itemSize 代表每行数据的固定高度
+    // offsetBak 将数据先缓存起来
+    // dataSource 数据源
     offsetMap ({ id, itemSize, offsetBak, dataSource }) {
       const res = {}
       let total = 0
@@ -67,8 +70,7 @@ export default {
         const key = dataSource[i][id]
         res[key] = total
         // 当前行的高度重新计算
-        const size = typeof offsetBak[key] === 'number' ? offsetBak[key] : itemSize
-        total += size
+        total += offsetBak[key] || itemSize
       }
       return res
     }
@@ -105,6 +107,7 @@ export default {
         if (!item) return
         // 计算表格行的高度
         let offsetHeight = row.offsetHeight
+        // 判断当前元素是否有展开列
         const nextEl = row.nextSibling
         if (nextEl && nextEl.classList && nextEl.classList.contains('ant-table-expanded-row')) {
           offsetHeight += row.nextSibling.offsetHeight
@@ -153,38 +156,32 @@ export default {
 
     // 计算位置
     calcPosition () {
-      const len = this.dataSource.length
-      const last = len - 1
+      if (!this.scroller) return
+      const last = this.dataSource.length - 1
       // 撑起整个滚动条，高度为 itemSize * length,动态高度则需要获取其offsetMap
       const wrapHeight = this.getItemOffset(last) + this.getItemSize(last)
       // 滚动条高度
       const offsetTop = this.getItemOffset(this.start)
 
-      // 设置dom位置
-      this.tableClass.forEach(className => {
-        const el = this.$el.querySelector(className)
-        if (!el) return
-
-        // 创建wrapEl、innerEl
-        if (!el.wrapEl) {
-          const wrapEl = document.createElement('div')
-          const innerEl = document.createElement('div')
-          wrapEl.appendChild(innerEl)
-          innerEl.appendChild(el.children[0])
-          el.insertBefore(wrapEl, el.firstChild)
-          el.wrapEl = wrapEl
-          el.innerEl = innerEl
-        }
-
-        if (el.wrapEl) {
-          // 设置高度
-          el.wrapEl.style.height = wrapHeight + 'px'
-          // 设置transform撑起高度
-          el.innerEl.style.transform = `translateY(${offsetTop}px)`
-          // 设置paddingTop撑起高度
-          // el.innerEl.style.paddingTop = `${offsetTop}px`
-        }
-      })
+      const el = this.scroller
+      // 创建新dom元素，替换原有样式
+      if (!el.wrapEl) {
+        const wrapEl = document.createElement('div')
+        const innerEl = document.createElement('div')
+        wrapEl.appendChild(innerEl)
+        innerEl.appendChild(el.children[0])
+        el.insertBefore(wrapEl, el.firstChild)
+        el.wrapEl = wrapEl
+        el.innerEl = innerEl
+      }
+      if (el.wrapEl) {
+        // 设置高度
+        el.wrapEl.style.height = wrapHeight + 'px'
+        // 设置transform撑起高度
+        el.innerEl.style.transform = `translateY(${offsetTop}px)`
+        // 设置paddingTop撑起高度
+        // el.innerEl.style.paddingTop = `${offsetTop}px`
+      }
     },
 
     // 获取高度offsetMap
@@ -201,15 +198,14 @@ export default {
       if (index <= -1) return 0
       const item = this.dataSource[index]
       if (item) {
-        const key = item[this.id]
-        return this.offsetBak[key] || this.itemSize
+        return this.offsetBak[item[this.id]] || this.itemSize
       }
       return this.itemSize
     },
 
     // 初始化数据
     initData () {
-      this.scroller = this.$el.querySelector('.ant-table-body')
+      this.scroller = this.$el.querySelector(this.tableClass)
       this.$nextTick(() => {
         this.handleScroll()
       })
@@ -218,7 +214,6 @@ export default {
     }
   },
   mounted () {
-    this.screenHeight = this.scrollY
     this.initData()
   },
   beforeDestroy () {
