@@ -7,28 +7,41 @@
     <div style="margin-top: 40px; height: 400px; border: #555555 1px solid">
       <div style="text-align: center; height: 30px; font-size: larger; font-weight: bolder">vue2 table 固定高度</div>
       <my-virtual-table-fix-height
+          v-if="tableFixList.length"
           :columns="columns"
           :data-source="tableFixList"
           id="id"
-          :scrollY="300">
+          :screenHeight="300">
       </my-virtual-table-fix-height>
+    </div>
+    <div style="margin-top: 40px; height: 400px; border: #555555 1px solid">
+      <div style="text-align: center; height: 30px; font-size: larger; font-weight: bolder">vue2 table 固定高度2</div>
+      <my-virtual-table-fix-height2
+          v-if="tableFixList.length"
+          :columns="columns"
+          :data-source="tableFixList"
+          id="id"
+          :screenHeight="300">
+      </my-virtual-table-fix-height2>
     </div>
     <div style="margin-top: 40px; height: 400px; border: #555555 1px solid">
       <div style="text-align: center; height: 30px; font-size: larger; font-weight: bolder">vue2 table 动态高度</div>
       <my-virtual-table-dynamic-height
+          v-if="tableDynamicList.length"
           :columns="columns"
           :data-source="tableDynamicList"
           id="id"
-          :scrollY="300">
+          :screenHeight="300">
       </my-virtual-table-dynamic-height>
     </div>
     <div style="margin-top: 40px; height: 400px; border: #555555 1px solid">
       <div style="text-align: center; height: 30px; font-size: larger; font-weight: bolder">vue2 table extend</div>
       <my-virtual-table-extend
+          v-if="tableExtendList.length"
           :columns="columns"
           :data-source="tableExtendList"
           id="id"
-          :scrollY="300">
+          :screenHeight="300">
         <template slot="expandedRowRender" slot-scope="row">
           详细内容：{{ row.description }}
         </template>
@@ -44,28 +57,19 @@
           :columns="columns"
           :data-source="tableTreeList"
           id="key"
-          :scrollY="300">
+          :screenHeight="300">
       </myVirtualTableTree1>
     </div>
     <div style="margin-top: 40px; height: 400px; border: #555555 1px solid">
-      <div style="text-align: center; height: 30px; font-size: larger; font-weight: bolder">vue2 table tree 2</div>
+      <div style="text-align: center; height: 30px; font-size: larger; font-weight: bolder">vue table tree 2 trace</div>
       <myVirtualTableTree2
-          :data-source="tableTreeList"
-          :columns="columns"
-          id="key"
-          :screenHeight="300">
-      </myVirtualTableTree2>
-    </div>
-    <div style="margin-top: 40px; height: 400px; border: #555555 1px solid">
-      <div style="text-align: center; height: 30px; font-size: larger; font-weight: bolder">vue table tree 3 trace</div>
-      <myVirtualTableTree3
           :data-source="tableTreeList3"
           id="spanId"
           parentId="parentSpanId"
           :errSpanIds="errSpanIds"
           :errAllSpanIds="errAllSpanIds"
-          :screenHeight="600">
-      </myVirtualTableTree3>
+          :screenHeight="300">
+      </myVirtualTableTree2>
     </div>
     <div style="margin-top: 40px; height: 100px"/>
   </div>
@@ -74,24 +78,24 @@
 <script>
 import myVirtualList from "@/components/myVirtualList";
 import myVirtualTableFixHeight from "@/components/myVirtualTableFixHeight";
+import myVirtualTableFixHeight2 from "@/components/myVirtualTableFixHeight2";
 import myVirtualTableDynamicHeight from "@/components/myVirtualTableDynamicHeight";
 import myVirtualTableExtend from "@/components/myVirtualTableExtend";
 import myVirtualListTree from "@/components/myVirtualListTree";
 import myVirtualTableTree1 from "@/components/myVirtualTableTree1";
 import myVirtualTableTree2 from "@/components/myVirtualTableTree2";
-import myVirtualTableTree3 from "@/components/myVirtualTableTree3";
 
 export default {
   name: 'App',
   components: {
     myVirtualList,
-    myVirtualTableDynamicHeight,
     myVirtualTableFixHeight,
+    myVirtualTableFixHeight2,
+    myVirtualTableDynamicHeight,
     myVirtualTableExtend,
     myVirtualListTree,
     myVirtualTableTree1,
     myVirtualTableTree2,
-    myVirtualTableTree3,
   },
   data () {
     return {
